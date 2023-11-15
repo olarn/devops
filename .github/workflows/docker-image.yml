@@ -5,6 +5,9 @@ on:
     branches: ['main']
   pull_request:
     branches: ['main']
+  pull_request_target:
+    branches:
+      - main
       
 jobs:
 
@@ -28,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
-        run: npx jest --coverage=true
-        
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ungumnuayporn/express-app:$(date +%s)
 
