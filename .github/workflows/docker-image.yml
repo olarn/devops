@@ -29,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npm jest --coverage=true
+        run: npx jest --coverage=true
         
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ungumnuayporn/express-app:$(date +%s)
