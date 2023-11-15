@@ -14,6 +14,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+        
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
+        
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ungumnuayporn/express-app:$(date +%s)
 
