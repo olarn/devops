@@ -55,3 +55,25 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set permissions for private key
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: Pull Docker image
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}:latest'
+
+      - name: Stop running container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker stop express-app || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm express-app || true'
+
+      - name: Run new container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}:latest'
