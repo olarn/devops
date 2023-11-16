@@ -67,7 +67,7 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}:latest'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}'
 
       - name: Stop running container
         run: |
@@ -76,4 +76,4 @@ jobs:
 
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}:latest'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}'
