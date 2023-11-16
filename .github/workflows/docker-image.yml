@@ -19,11 +19,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set variable
-        id: img-tag
-        run: |
-          context.setContext('img-tag', $(date +%s))
-
       - uses: actions/checkout@v4
       - uses: ArtiomTr/jest-coverage-report-action@v2
 
