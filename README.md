@@ -49,3 +49,7 @@ Development utilities:
   - Jest is a delightful JavaScript Testing Framework with a focus on simplicity.
 - [supertest](https://www.npmjs.com/package/supertest)
   - HTTP assertions made easy via superagent.
+
+Note:
+
+- [Github Action to build & deploy](https://blog.devops.dev/continuous-deployment-with-github-actions-dockerhub-and-aws-ec2-a-hands-on-tutorial-b01656a27963)
