@@ -10,7 +10,7 @@ on:
       - main
 
 env:
-  img-tag: ${{ github.sha }}
+  img-tag: '${{ github.sha }}'
 
 jobs:
   build:
