@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+env:
+  img-tag: ${{ github.sha }}
+
 jobs:
   build:
     permissions:
@@ -35,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.img-tag }}
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -53,7 +59,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: $img-tag
+          tags: ${{ env.img-tag }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Set permissions for private key
@@ -63,7 +69,7 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}:$img-tag'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.img-tag }}'
 
       - name: Stop running container
         run: |
@@ -72,4 +78,4 @@ jobs:
 
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 3000:3000 ${{ vars.DOCKER_IMAGE_NAME }}:$img-tag'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.img-tag }}'
