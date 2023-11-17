@@ -45,7 +45,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=schedule,pattern={{date 'YYYYMMDD'}}
+            type=sha,format=short
 
       - name: Build and push Docker image
         id: build-and-push
