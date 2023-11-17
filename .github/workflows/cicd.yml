@@ -79,8 +79,7 @@ jobs:
 
       - name: Stop running container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker stop ${{ env.IMAGE_NAME }} || true'
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm ${{ env.IMAGE_NAME }} || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm -f ${{ needs.build-image.outputs.image_tags }} || true'
 
       - name: Run new container
         run: |
