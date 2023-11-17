@@ -1,0 +1,6 @@
+###
+GET http://express-app.sandbox-me.com:3000
+###
+GET http://express-app.sandbox-me.com:3000/api/v1
+###
+GET http://express-app.sandbox-me.com:3000/api/v1/emojis
