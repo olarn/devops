@@ -75,7 +75,7 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ env.IMAGE_NAME }}:${{ needs.build-image.outputs.image_tags }}'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ needs.build-image.outputs.image_tags }}'
 
       - name: Stop running container
         run: |
@@ -84,4 +84,4 @@ jobs:
 
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name ${{ env.IMAGE_NAME }} -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}:${{ needs.build-image.outputs.image_tags }}'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name ${{ env.IMAGE_NAME }} -p 80:3000 ${{ needs.build-image.outputs.image_tags }}'
