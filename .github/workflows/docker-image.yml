@@ -45,7 +45,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=backend-,format=short
+            type=schedule,pattern={{date 'YYYYMMDD'}}
 
       - name: Build and push Docker image
         id: build-and-push
@@ -58,3 +58,15 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set permissions for private key
+        env:
+          TAG: ${{ needs.build.outputs.image_tags }}
+        run: |
+          echo "$TAG"
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
