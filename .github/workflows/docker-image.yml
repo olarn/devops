@@ -3,22 +3,28 @@ name: Docker Image CI
 on:
   push:
     branches: ['main']
-  pull_request:
-    branches: ['main']
-  pull_request_target:
-    branches:
-      - main
+
 env:
   IMAGE_NAME: ungumnuayporn/express-app2
 
 jobs:
-  build:
+  run-tests:
     runs-on: ubuntu-latest
 
     permissions:
       checks: write
       pull-requests: write
       contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests and Code Coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2
+
+  build-image:
+    runs-on: ubuntu-latest
 
     outputs:
       image_tags: ${{ steps.meta.outputs.tags }}
@@ -59,14 +65,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy-dev:
-    needs: build
+  deploy-aws:
+    needs: build-image
     runs-on: ubuntu-latest
+
     steps:
       - name: Set permissions for private key
-        env:
-          TAG: ${{ needs.build.outputs.image_tags }}
         run: |
-          echo $TAG
+          echo "${{ needs.build-image.outputs.image_tags }}"
           echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
           chmod 600 key.pem
