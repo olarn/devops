@@ -24,6 +24,7 @@ jobs:
         uses: ArtiomTr/jest-coverage-report-action@v2
 
   build-image:
+    needs: run-tests
     runs-on: ubuntu-latest
 
     outputs:
