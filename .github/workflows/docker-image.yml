@@ -8,31 +8,27 @@ on:
   pull_request_target:
     branches:
       - main
-      
-jobs:
 
+jobs:
   build:
     permissions:
       checks: write
       pull-requests: write
       contents: write
-    
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
       - uses: ArtiomTr/jest-coverage-report-action@v2
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
-        
+
       - name: Install dependencies
         run: npm ci
-
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ungumnuayporn/express-app:$(date +%s)
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -44,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ungumnuayporn/express-app
+          images: ${{ vars.DOCKER_IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -52,5 +48,23 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Set permissions for private key
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: Pull Docker image
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker pull ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}'
+
+      - name: Stop running container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker stop express-app || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm express-app || true'
+
+      - name: Run new container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name express-app -p 80:3000 ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}'
