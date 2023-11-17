@@ -6,6 +6,7 @@ on:
 
 env:
   IMAGE_NAME: ungumnuayporn/express-app2
+  INSTANCE_NAME: express-app
 
 jobs:
   run-tests:
@@ -79,8 +80,8 @@ jobs:
 
       - name: Stop running container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm -f ${{ needs.build-image.outputs.image_tags }} || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker rm -f ${{ env.INSTANCE_NAME }} || true'
 
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name ${{ env.IMAGE_NAME }} -p 80:3000 ${{ needs.build-image.outputs.image_tags }}'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ vars.SERVER_NAME }} 'sudo docker run -d --name ${{ env.INSTANCE_NAME }} -p 80:3000 ${{ needs.build-image.outputs.image_tags }}'
