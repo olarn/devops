@@ -1,0 +1,79 @@
+Tutorial: https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-intro/ 
+
+(Optional - if not run through 2.)
+
+$ kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+$ kubectl get deployments
+$ kubectl get pods
+$ kubectl get services
+
+Create new Service and Expose 
+
+$ kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+$ kubectl get services
+  -> get <IP address> of service named kubernetes-bootcamp 
+
+$ curl http://<ip_address>:8080 
+
+Using Labels
+
+$ kubectl describe deployment
+
+  Name:                   kubernetes-bootcamp
+
+  Namespace:              default
+  CreationTimestamp:      Tue, 21 Nov 2023 16:13:46 +0700
+  
+  Labels:                 app=kubernetes-bootcamp  <-- label name is here.
+  
+  Annotations:            deployment.kubernetes.io/revision: 1
+  Selector:               app=kubernetes-bootcamp
+  Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+  StrategyType:           RollingUpdate
+  MinReadySeconds:        0
+  RollingUpdateStrategy:  25% max unavailable, 25% max surge
+  Pod Template:
+    Labels:  app=kubernetes-bootcamp
+    Containers:
+    kubernetes-bootcamp:
+      Image:        gcr.io/google-samples/kubernetes-bootcamp:v1
+      Port:         <none>
+      Host Port:    <none>
+      Environment:  <none>
+      Mounts:       <none>
+    Volumes:        <none>
+  Conditions:
+    Type           Status  Reason
+    ----           ------  ------
+    Available      True    MinimumReplicasAvailable
+    Progressing    True    NewReplicaSetAvailable
+  OldReplicaSets:  <none>
+  NewReplicaSet:   kubernetes-bootcamp-855d5cc575 (1/1 replicas created)
+  Events:
+    Type    Reason             Age   From                   Message
+    ----    ------             ----  ----                   -------
+    Normal  ScalingReplicaSet  18h   deployment-controller  Scaled up replica set kubernetes-bootcamp-855d5cc575 to 1
+
+Let’s use this label to query our list of Pods. 
+
+$ kubectl get pods -l app=kubernetes-bootcamp
+
+You can do the same to list the existing Services:
+
+$ kubectl get services -l app=kubernetes-bootcamp
+
+Get the name of the Pod and store it in the POD_NAME environment variable:
+
+$ export POD_NAME="$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')"
+$ echo "Name of the Pod: $POD_NAME"
+
+Apply a new label 
+
+$ kubectl label pods "$POD_NAME" version=v1
+$ kubectl describe pods "$POD_NAME"
+$ kubectl get pods -l version=v1
+
+Delete service with Labels
+
+$ kubectl delete service -l app=kubernetes-bootcamp
+

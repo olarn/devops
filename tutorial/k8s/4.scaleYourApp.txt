@@ -1,0 +1,35 @@
+Tutorial : https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/
+
+To see the ReplicaSet
+
+$ kubectl get rs
+
+$ kubectl scale deployments/kubernetes-bootcamp --replica=4
+
+$ kubectl get deployments
+$ kubectl get pods -o wide
+$ kubectl describe deployments/kubernetes-bootcamp
+
+Load Balancing
+
+(option - re-create service if it deleted from previous chapter.)
+$ kubectl expose deployments/kubernetes-bootcamp --type="NodePort" --port=8080
+
+$ kubectl describe services/kubernetes-bootcamp
+
+Call API over cluster
+
+Create an environment variable
+
+$ export NODE_PORT="$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')"
+$ echo NODE_PORT=$NODE_PORT
+$ kubectl describe pods  <- ดู IP ของ OrbStack ที่ field Node: เช่น "Node: orbstack/198.19.249.2"
+
+Test call service
+$ curl http://198.19.249.2:"$NODE_PORT"
+
+Scale Down
+
+$ kubectl scale deployments/kubernetes-bootcamp --replicas=2
+$ kubectl get deployments
+$ kubectl get pods -o wide

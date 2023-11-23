@@ -1,0 +1,47 @@
+Tutorial: https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/
+
+Set deployment image to v2
+
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+$ kubectl get pods  <- pods's age will restart
+
+Verify an update
+
+Check app is running
+$ kubectl describe services/kubernetes-bootcamp
+
+Rollout Status
+$ kubectl rollout status deployments/kubernetes-bootcamp
+
+Call API new version
+$ curl http://<orb_ip>:"$NODE_PORT"
+  old version -> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-689799745d-6gmvt | v=1
+  new version -> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-69b6f9fbb9-6wzrf | v=2
+
+Rollback an update 
+
+set to v10 (problem version)
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+
+$ kubectl get deployments
+  -> Notice that the output doesn't list the desired number of available Pods. Run the get pods subcommand to list all Pods:
+
+$ kubectl get pods
+  -> Notice that some of the Pods have a status of ImagePullBackOff.
+
+To get more insight into the problem, run the describe pods subcommand:
+$ kubectl describe pods
+
+Error -> 
+  Events:
+    Type     Reason     Age                   From               Message
+    ----     ------     ----                  ----               -------
+    Normal   Scheduled  3m37s                 default-scheduler  Successfully assigned default/kubernetes-bootcamp-66566cb7f-58lkw to orbstack
+    Normal   Pulling    113s (x4 over 3m36s)  kubelet            Pulling image "gcr.io/google-samples/kubernetes-bootcamp:v10"
+    Warning  Failed     111s (x4 over 3m34s)  kubelet            Failed to pull image "gcr.io/google-samples/kubernetes-bootcamp:v10": rpc error: code = Unknown desc = Error response from daemon: manifest for gcr.io/google-samples/kubernetes-bootcamp:v10 not found: manifest unknown: Failed to fetch "v10" from request "/v2/google-samples/kubernetes-bootcamp/manifests/v10".
+    Warning  Failed     111s (x4 over 3m34s)  kubelet            Error: ErrImagePull
+    Warning  Failed     97s (x6 over 3m34s)   kubelet            Error: ImagePullBackOff
+    Normal   BackOff    85s (x7 over 3m34s)   kubelet            Back-off pulling image "gcr.io/google-samples/kubernetes-bootcamp:v10"
+
+Remember to clean up your local cluster
+$ kubectl delete deployments/kubernetes-bootcamp services/kubernetes-bootcamp

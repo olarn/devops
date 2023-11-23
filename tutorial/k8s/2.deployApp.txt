@@ -1,0 +1,30 @@
+Tutorial: https://kubernetes.io/docs/tutorials/kubernetes-basics/deploy-app/deploy-intro/ 
+
+Create Deployment
+
+$ kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+$ kubectl get deployments
+
+Running proxy 
+$ kubectl proxy & 
+$ export POD_NAME="$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')"
+$ echo Name of the Pod: $POD_NAME
+
+Call service inside pod through proxy
+$ curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME:8080/proxy/
+
+Get log
+$ kubectl logs "$POD_NAME"
+
+Executing command on the container
+
+$ kubectl exec "$POD_NAME" -- env
+$ kubectl exec -ti $POD_NAME -- bash
+
+  $$ cat server.js
+  $$ curl http://localhost:8080
+  $$ exit
+
+Kill kubectl proxy
+$ ps -ef | grep "kubectl proxy"
+$ kill -9 <pid>
