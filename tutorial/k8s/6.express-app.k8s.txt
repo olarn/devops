@@ -1,0 +1,17 @@
+(optional) Delete exiting 
+  $ kubectl delete  deployment express-app 
+
+Build image 
+  $ docker build -t local/express-app:v1
+
+Create deployment
+  $ kubectl create deployment express-app --image=local/express-app:v1
+
+Create Service
+  $ kubectl expose deployment/express-app --type="NodePort" --port 3000
+
+Scale Service 
+  $ kubectl scale deployment/express-app --replicas=4
+
+Clean up
+  $ kubectl delete 

@@ -1,0 +1,9 @@
+Tutorial: 
+  https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
+  https://codefresh.io/learn/kubernetes-deployment/kubernetes-deployment-yaml/ 
+
+From deployment.yml
+
+Create deployment from deployment Failed
+  $ kubectl apply -f ./deployment.yml
+
